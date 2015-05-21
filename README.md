@@ -14,4 +14,4 @@ Trying out a few different methods:
 
 ##Usage:
 
-fastq_rnd_seek <input filename> <integer for sample level>
+`fastq_rnd_seek <input filename> <integer for sample level>`
