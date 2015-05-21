@@ -1,22 +1,4 @@
 #!/Applications/Julia-0.3.8.app/Contents/Resources/julia/bin/julia
-# required modules
-require("argparse")
-using ArgParse
-
-# function to parse arguments
-function parse_arguments()
-  s = ArgParseSettings()
-  @add_arg_table s begin
-    "filename"
-      help = "Input filename."
-      required = true
-    "numsamples"
-      help = "Number of sequences to sample."
-      arg_type = Int
-      default = 10000
-  end
-  return parse_args(s)
-end
 
 # function to return random position in file
 function get_random_pos(rnd_num)
@@ -25,12 +7,13 @@ end
 
 # main function
 function main()
-  # retrieve parsed arguments
-  parsed_args = parse_arguments()
-
   # set filename
-  filename = parsed_args["filename"]
-  numsamples = parsed_args["numsamples"]
+  if length(ARGS) < 2
+      println(STDERR, "Usage: fastq_rnd_seek_proper.jl filename numsamples")
+      exit()
+  end
+  filename = ARGS[1]
+  numsamples = parse(Int, ARGS[2])
 
   # check file exists
   if !isfile(filename)
@@ -45,26 +28,26 @@ function main()
 
   # iterate number of samples times
   observed = Array(Int64, 0)
+  lines = Array(ASCIIString, 4)
   for i = 1:numsamples
     valid_record = false
-    lines = Array(ASCIIString, 4)
     while !valid_record
       pos = get_random_pos(infilesize)
       seek(infh, pos)
       readuntil(infh, "\n@")
       pos = position(infh) - 1
       seek(infh, pos)
-      for j in [1:4]
-        lines[j] = rstrip(readline(infh))
+      for j in 1:4
+        lines[j] = readline(infh)
       end
-      if beginswith(lines[1], "@") && beginswith(lines[3], "+")
+      if startswith(lines[1], "@") && startswith(lines[3], "+")
         if !in(pos, observed)
           valid_record = true
           push!(observed, pos)
         end
       end
     end
-    println(join(lines, "\n"))
+    print(join(lines))
   end
 
   # close file handle
@@ -73,3 +56,5 @@ end
 
 # call main function
 main()
+
+
