@@ -11,3 +11,7 @@ Trying out a few different methods:
 **fastq_rnd_seek_proper_re.py** - Seeks to random locations in the FASTQ file and uses a regex to find the next "valid" FASTQ record.
 
 **fastq_rnd_seek.jl** - A Julia implementation that seeks to random locations in the FASTQ file and searches for the next "valid" FASTQ record.
+
+##Usage:
+
+fastq_rnd_seek <input filename> <integer for sample level>
